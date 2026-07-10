@@ -1,5 +1,56 @@
 <?php
 
+function createHabit(array &$habits, string $name, string $description, int $xp): void
+{
+    static $id = 1;
+    $habits[] = [
+        "id" => $id,
+        "name" => $name,
+        "description" => $description,
+        "xp" => $xp,
+        "completed" => false,
+    ];
+    $id++;
+}
+
+function findHabitById(array $habits, int $id): ?array
+{
+    foreach ($habits as $habit) {
+        if ($habit["id"] == $id) {
+            return $habit;
+        }
+    }
+    return null;
+}
+
+function completeHabit(array &$habits, int $id): bool
+{
+    foreach ($habits as &$habit) {
+        if ($habit["id"] == $id) {
+            $habit["completed"] = true;
+            return true;
+        }
+    }
+    return false;
+}
+
+function deleteHabit(array &$habits, int $id): bool
+{
+    $new = [];
+    $founded = false;
+
+    foreach ($habits as $habit) {
+        if ($habit["id"] == $id) {
+            $founded = true;
+            continue;
+        }
+        $new[] = $habit;
+    }
+
+    $habits = $new;
+    return $founded;
+}
+
 function saveHeroes(array $heroes, string $path): void
 {
     file_put_contents($path, json_encode($heroes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -37,6 +88,45 @@ function printHero(array $hero): void
     echo PHP_EOL;
 }
 
+function getStats(array $heroes): array
+{
+    $heroesCount = 0;
+    $totalXP = 0;
+    $strongest = $heroes[0];
+
+    foreach ($heroes as $hero) {
+        if ($hero["xp"] > $strongest["xp"]) {
+            $strongest = $hero;
+        }
+
+        $heroesCount += 1;
+        $totalXP += $hero["xp"];
+    }
+
+    return [
+        "heroesCount" => $heroesCount,
+        "totalXP" => $totalXP,
+        "strongest" => $strongest,
+    ];
+}
+
+function printStats(array $heroes): void
+{
+    $stats = getStats($heroes);
+
+    echo "===== ESTATÍSTICAS =====" . PHP_EOL;
+    echo PHP_EOL;
+    echo "Total de heróis: " . $stats["heroesCount"] . PHP_EOL;
+    echo PHP_EOL;
+    echo "XP total: " . $stats["totalXP"] . PHP_EOL;
+    echo PHP_EOL;
+    echo "XP médio: " . ($stats["totalXP"] / $stats["heroesCount"]) . PHP_EOL;
+    echo PHP_EOL;
+    echo "Herói mais forte: " . $stats["strongest"]["name"] . PHP_EOL;
+    echo "XP: " . $stats["strongest"]["xp"] . PHP_EOL;
+    echo PHP_EOL;
+}
+
 $heroes = [
     [
         "name" => "Natan",
@@ -70,29 +160,11 @@ $heroes = [
     ]
 ];
 
-$heroesCount = 0;
-$totalXP = 0;
-$strongest = $heroes[0];
+$habits = [];
 
-foreach ($heroes as $hero) {
-    if ($hero["xp"] > $strongest["xp"]) {
-        $strongest = $hero;
-    }
+createHabit($habits, "ler", "leia um livro", 20);
+createHabit($habits, "treinar", "faça calistenia", 30);
+completeHabit($habits, 1);
+deleteHabit($habits, 1);
 
-    $heroesCount += 1;
-    $totalXP += $hero["xp"];
-
-    printHero($hero);
-}
-
-echo "===== ESTATÍSTICAS =====" . PHP_EOL;
-echo PHP_EOL;
-echo "Total de heróis: " . $heroesCount . PHP_EOL;
-echo PHP_EOL;
-echo "XP total: " . $totalXP . PHP_EOL;
-echo PHP_EOL;
-echo "XP médio: " . ($totalXP / $heroesCount) . PHP_EOL;
-echo PHP_EOL;
-echo "Herói mais forte: " . $strongest["name"] . PHP_EOL;
-echo "XP: " . $strongest["xp"] . PHP_EOL;
-echo PHP_EOL;
+print_r($habits);
