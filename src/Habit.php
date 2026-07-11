@@ -2,9 +2,13 @@
 
 namespace QuestLog;
 
+use Exception;
+use InvalidArgumentException;
+
 class Habit
 {
-    private static int $id = 1;
+    private static int $nextId = 1;
+    private int $id;
     private string $name;
     private string $description;
     private int $xp;
@@ -12,11 +16,23 @@ class Habit
 
     public function __construct(string $name, string $description, int $xp)
     {
+        if ($name === "") {
+            throw new InvalidArgumentException("name cant be empty");
+        }
+        if ($description === "") {
+            throw new InvalidArgumentException("description cant be empty");
+        }
+        if ($xp < 0) {
+            throw new InvalidArgumentException("xp should be bigger than zero");
+        }
+
+        $this->id = self::$nextId;
         $this->name = $name;
         $this->description = $description;
         $this->xp = $xp;
         $this->completed = false;
-        $this->id++;
+
+        self::$nextId++;
     }
 
     public function getId(): int
@@ -33,7 +49,7 @@ class Habit
     {
         return $this->description;
     }
-    public function getXP(): int
+    public function getXp(): int
     {
         return $this->xp;
     }
