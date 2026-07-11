@@ -1,0 +1,15 @@
+{
+    "name": "natan/questlog",
+    "autoload": {
+        "psr-4": {
+            "QuestLog\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Natan",
+            "email": "natanscosta7@gmail.com"
+        }
+    ],
+    "require": {}
+}
